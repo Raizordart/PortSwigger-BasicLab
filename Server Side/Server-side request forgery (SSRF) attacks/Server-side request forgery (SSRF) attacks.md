@@ -77,3 +77,20 @@ Do lab này yêu cầu rất ngắn gọn là thay đổi địa chỉ Referer t
 - Một trong các kĩ thuật Blind SSRF được sử dụng ở đây là Out-of-Band, khi mà attacker có thể khiến server gửi request tới DNS hướng tới server của attacker. Có nhiều cách để làm như inject payload vào request, sử dụng webshell, hay như trong lab này là sử dụng Referer.
 2. Tại sao là Referer?
 - Header Referer theo như mô tả của [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referer) chỉ đường dẫn chứa đường link dân tới trang hiện tại. Một số website sử dụng header này để phân tích và thống kê lượt truy cập hoặc để tối ưu,... Nếu việc sử dụng Header này không được xử lý tốt, thì khi mà attacker inject DNS độc vào request, server sẽ vẫn coi đó là 1 DNS của server và gửi request tới đó, từ đó attacker có thể gửi response độc tới server.
+
+### Lab: SSRF with whitelist-based input filter
+Trái ngược với Lab blacklist, lab này chỉ cho phép một số keyword được phép ghi ở payload.
+
+Ở phần `stock check`, khi ta kiểm tra payload sẽ thấy thay vì là các param thì giờ đây nó là 1 API call tới server host:
+
+![image-16](images/image-16.png)
+
+Nếu ta thử để `stockAPI` là `http://localhost`, hệ thống sẽ thông báo `"External stock check host must be stock.weliketoshop.net"`, tức là mọi API ta gửi qua param này đều phải có host `stock.weliketoshop.net`. 
+
+Khi ta thay cấu trúc stockAPI thành `username@stock.weliketoshop.net`, hệ thống sẽ chấp nhận request, điều đó có nghĩa là whitelist ở lab này là `stock.weliketoshop.net`. Bằng cách thêm dấu "#" được URL encode thành `%2523`, ta có thể gọi localhost mà vẫn đúng whitelist: `stockApi=http%3A%2F%2Flocalhost%2523@stock.weliketoshop.net`
+
+![image-17](images/image-17.png)
+
+Khi này, ta có thể truy cập vào `/admin` và xoá đi user `carlos`: `stockApi=http%3A%2F%2Flocalhost%2523@stock.weliketoshop.net/admin/delete?username=carlos`
+
+![image-18](images/image-18.png)

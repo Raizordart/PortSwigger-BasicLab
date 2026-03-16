@@ -160,11 +160,39 @@ Crack đoạn hash nằm trong `stay-logged-in` ta được mật khẩu: `onceu
 ### Lab: Password reset broken logic
 Lỗ hỏng ở Lab này được đặt ở phần reset password. Cụ thể khi reset password cho 1 username, hệ thống sẽ gửi mail tới email của username đó, trong đó chứa token làm param để reset password.
 
-![image-34](images/image-24.png)
+![image-34](images/image-34.png)
 
 Vấn đề là token này không tự động huỷ khi đã sử dụng, hoặc kiểm tra xem user này có phải là người yêu cầu token hay không. Từ đó, ta có thể sử dụng token này để reset mật khẩu của Carlos:
 
-![image-35](images/image-25.png)
+![image-35](images/image-35.png)
 
 Còn lại là truy cập vào user `Carlos` để hoàn thành Lab.
 
+### Lab: Password reset poisoning via middleware
+Tương tự với lab trên, nhưng khi này ta khai thác lỗ hỏng ở phía trung gian. Cụ thể, để có thể lấy được token `reset password` của username `carlos`, ta cần phải khiến server gửi request tới domain server attacker. 
+
+Ở danh mục Proxies, ta có `X-Forwarded-Host` có chức năng tương tự `X-Forwarded-For`, nhưng là dành cho `host` thay vì `IP`. Ta có thể sử dụng Header này để gửi request tới `carlos` thông báo reset mật khẩu, từ đó ta có quyền reset tuỳ ý:
+
+![image-36](images/image-36.png)
+
+`10.0.4.134      2026-03-12 02:28:53 +0000 "GET /forgot-password?temp-forgot-password-token=bmrsi3hpxbxi5khndg4fmd25qj9cvlpi HTTP/1.1" 404 "user-agent: Mozilla/5.0 (Victim) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"`
+
+Khi đã có token, ta có thể thay đổi mật khẩu tuỳ ý rồi đăng nhập vào tài khoản `Carlos`.
+
+### Lab: Password brute-force via password change
+Lỗ hỏng của lab này được đặt ở phần thay đổi mật khẩu.
+
+Cụ thể, khi thay đổi password, sẽ có 2 trường hợp lỗi xảy ra:
+- Nếu `Current password` không trùng khớp với password hiện tại, thông báo `Current password is incorrect` sẽ hiển thị
+- Nếu `Confirm new password` không trùng khớp `New password`, thông báo `New passwords do not match` sẽ hiển thị.
+
+Tức là, ta chỉ cần bruteforce mật khẩu sao cho thông báo `New passwords do not match` hiển thị, thì đó là mật khẩu đúng cho tài khoản `Carlos`
+
+![image-37](images/image-37.png)
+
+### Lab: Broken brute-force protection, multiple credentials per request
+Lỗi ở lab này được đặt ở Header Content-Type.
+
+Cụ thể, ở Request `POST /login`, ta sẽ thấy Header `Content-Type: application/json`, và với việc không thể sử dụng NoSQL Injection với vài keyword bypass, ta có thể xài cách khác. Ta có thể đẩy toàn bộ candidate password vào một list rồi gửi trong 1 request duy nhất, việc làm này sẽ đăng nhập thành công vào hệ thống.
+
+![image-38](images/image-38.png)

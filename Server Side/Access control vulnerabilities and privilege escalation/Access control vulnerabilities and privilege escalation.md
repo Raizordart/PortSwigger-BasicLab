@@ -88,3 +88,54 @@ Không có bài học nào rút ra từ lab này. Nếu ta thay đổi `id=carlo
 
 ![image-17](images/image-17.png)
 
+### Lab: User ID controlled by request parameter with password disclosure
+Cũng với yêu cầu như các lab trên, ở lab này, ta sẽ thăng quyền hạn bằng cách sử dụng query URL. Cụ thể, ta có thể truy cập vào các tài khoản qua việc đổi `id=$username`:
+
+![image-18](images/image-18.png)
+
+Ta có thể biết được password của username này bằng việc check source code:
+
+![image-19](images/image-19.png)
+
+Với cách này, ta có thể áp dụng để truy cập vào tài khoản `administrator`
+
+![image-20](images/image-20.png)
+
+![image-21](images/image-21.png)
+
+Sau khi biết mật khẩu, ta đăng nhập vào tài khoản `administrator`, xoá user `carlos` để hoàn thành lab.
+
+### Lab: Insecure direct object references
+IDOR, hay "Tham chiếu đối tượng trực tiếp không an toàn", là lỗ hỏng cơ bản và nguy hiểm cho bật cứ website nào. Lỗ hỏng này xảy ra khi user có quyền truy cập vào tài nguyên hệ thống một cách trực tiếp thông qua backend mà không phải qua tính xác thực.
+
+Ở Lab này, lỗi IDOR xuất hiện khi ta tải dữ liệu hội thoại chatbox về:
+
+![image-22](images/image-22.png)
+
+Ở Header, ta thấy URL query tới backdoor để lộ ID transcript, và nó luôn bắt đầu từ số 2, vậy nếu ta query tới transcript `1.txt` thì sao?
+
+![image-23](images/image-23.png)
+
+Trích xuất mật khẩu có trong transcript là ta đăng nhập được tài khoản` Carlos`.
+
+### Lab: Multi-step process with no access control on one step
+Lab này yêu cầu ta bypass hệ thống xác thực nhiều bước chỉ bằng 1 bước duy nhất.
+
+Đầu tiên, ta sẽ cần đăng nhập tài khoản `administrator` để kiểm tra các API. Ở phần thăng cấp user, có API cần chú ý là `POST /admin-roles`. Tuỳ thuộc vào payload, nếu trong payload không có param `confirmed=true`, thì hệ thống sẽ hỏi thêm 1 lần nữa để xác thực:
+
+![image-24](images/image-24.png)
+
+Ta sẽ sử dụng API chứa param `confirmed=true` để gửi lên server với tài khoản của user `wiener` để thăng quyền hạn lên admin:
+
+![image-25](images/image-25.png)
+
+### Lab: Referer-based access control
+Như tên gọi của Lab, khi ta kiểm tra API thăng quyền hạn user `/admin-roles?username=wiener&action=upgrade`, nếu ta xoá đi `/admin` ở Referer, thì dù là tài khoản admin vẫn sẽ bị báo là `"Unauthorized"`
+
+![image-26](images/image-26.png)
+
+Sử dụng lỗ hỏng này, ta đăng nhập vào user `wiener`, dán cookie `Session` vào Request trên để thăng quyền hạn.
+
+![image-27](images/image-27.png)
+
+

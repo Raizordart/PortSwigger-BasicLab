@@ -23,11 +23,7 @@ Gửi request này tới Burp Intruder, brutefore mfa-code từ 0000 -> 9999, ta
 
 ![image-4](images/image-4.png)
 
-Sau khi có được code, ta sẽ quay về bước nhập 2FA, sử dụng Burp Intercept để chặn request gửi mã 2FA đi, thay số đó thành mã code ta tìm được với username là `carlos`, ta sẽ truy cập được tài khoản của `carlos`:
-
-
-
-
+Sau khi có được code, ta sẽ quay về bước nhập 2FA, sử dụng Burp Intercept để chặn request gửi mã 2FA đi, thay số đó thành mã code ta tìm được với username là `carlos`, ta sẽ truy cập được tài khoản của `carlos`.
 
 ### Lab: High-level logic vulnerability
 Tương tự với Lab `Excessive trust in client-side controls` với user input không được validate, nhưng khi này payload không còn chứa giá sản phẩm:
