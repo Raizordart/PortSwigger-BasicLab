@@ -213,6 +213,11 @@ Tuy nhiên, hệ thống chỉ kiểm tra tên domain, chứ không kiểm tra c
 
 ![image-39](images/image-39.png)
 
-Khi này, ta có thể thêm Header này vào phần `Head` của exploit:
+Khi này, ta có thể thêm Header này vào phần `Head` của exploit, đồng thời thay đổi `history.pushState('', '', '/?<Lab-ID>')` để mỗi lần truy cập thì đều giữ nguyên `referer` là `<Lab-ID>`
 
 ![image-40](images/image-40.png)
+
+Nhưng khi này, thông báo `"Invalid referer header"` vẫn hiển thị. Đó là do browser tự động bỏ đi header `Referer` vì lý do bảo mật. Khi này ta cần thêm Header `Referrer-Policy: unsafe-url` và `Head` để thêm header `Referer` vào request.
+
+![image-41](images/image-41.png)
+
