@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 123123
 abc123
 football
@@ -27,4 +28,35 @@ superman
 baseball
 7777777
 121212
+=======
+123123
+abc123
+football
+monkey
+letmein
+shadow
+master
+666666
+qwertyuiop
+123321
+mustang
+123456
+password
+12345678
+qwerty
+123456789
+12345
+1234
+111111
+1234567
+dragon
+1234567890
+michael
+x654321
+superman
+1qaz2wsx
+baseball
+7777777
+121212
+>>>>>>> ae5bd4f (init commit)
 000000
